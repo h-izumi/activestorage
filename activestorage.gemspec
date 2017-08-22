@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = ">= 2.2.2"
 
-  s.add_dependency "rails", ">= 5.2.0.alpha"
+  s.add_dependency "rails", "5.1.3"
 
   s.add_development_dependency "bundler", "~> 1.15"
 
