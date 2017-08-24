@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-version = File.read(File.expand_path("../RAILS_VERSION", __dir__)).strip
+version = "5.1.3"
 
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
@@ -19,11 +19,6 @@ Gem::Specification.new do |s|
 
   s.files        = Dir["CHANGELOG.md", "MIT-LICENSE", "README.md", "lib/**/*", "app/**/*", "config/**/*"]
   s.require_path = "lib"
-
-  s.metadata = {
-    "source_code_uri" => "https://github.com/rails/rails/tree/v#{version}/activestorage",
-    "changelog_uri"   => "https://github.com/rails/rails/blob/v#{version}/activestorage/CHANGELOG.md"
-  }
 
   s.add_dependency "actionpack", version
   s.add_dependency "activerecord", version
