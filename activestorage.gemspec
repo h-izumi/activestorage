@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-version = "5.1.3"
+version = "5.1.4"
 
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
