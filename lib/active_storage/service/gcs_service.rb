@@ -9,8 +9,8 @@ module ActiveStorage
   class Service::GCSService < Service
     attr_reader :client, :bucket
 
-    def initialize(project:, keyfile:, bucket:)
-      @client = Google::Cloud::Storage.new(project: project, keyfile: keyfile)
+    def initialize(project:, keyfile:, bucket:, **options)
+      @client = Google::Cloud::Storage.new(project: project, keyfile: keyfile, **options)
       @bucket = @client.bucket(bucket)
     end
 
@@ -24,19 +24,24 @@ module ActiveStorage
       end
     end
 
-    # FIXME: Add streaming when given a block
+    # FIXME: Download in chunks when given a block.
     def download(key)
       instrument :download, key do
         io = file_for(key).download
         io.rewind
-        io.read
+
+        if block_given?
+          yield io.read
+        else
+          io.read
+        end
       end
     end
 
     def delete(key)
       instrument :delete, key do
         begin
-          file_for(key).try(:delete)
+          file_for(key).delete
         rescue Google::Cloud::NotFoundError
           # Ignore files already deleted
         end
@@ -45,7 +50,7 @@ module ActiveStorage
 
     def exist?(key)
       instrument :exist, key do |payload|
-        answer = file_for(key).present?
+        answer = file_for(key).exists?
         payload[:exist] = answer
         answer
       end
@@ -54,7 +59,7 @@ module ActiveStorage
     def url(key, expires_in:, filename:, content_type:, disposition:)
       instrument :url, key do |payload|
         generated_url = file_for(key).signed_url expires: expires_in, query: {
-          "response-content-disposition" => disposition,
+          "response-content-disposition" => content_disposition_with(type: disposition, filename: filename),
           "response-content-type" => content_type
         }
 
@@ -81,7 +86,7 @@ module ActiveStorage
 
     private
       def file_for(key)
-        bucket.file(key)
+        bucket.file(key, skip_lookup: true)
       end
   end
 end
